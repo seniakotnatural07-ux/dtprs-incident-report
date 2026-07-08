@@ -1,206 +1,109 @@
 {
-  "generated_at": "2026-07-08T11:55:18.415669",
+  "generated_at": "2026-07-08T12:09:42.002898",
   "kpi": {
-    "total_incidents": 7,
-    "gt8h_count": 3,
-    "total_downtime_minutes": 3330,
-    "avg_downtime_minutes": 476,
-    "problem_city": "Актобе",
-    "frequent_node": "Караганда MSAN_12"
+    "total_incidents": 3,
+    "gt8h_count": 0,
+    "total_downtime_minutes": 450,
+    "avg_downtime_minutes": 150,
+    "problem_city": "с.Карашокы",
+    "frequent_node": "krshoky-alm-snp"
   },
   "by_city": [
     {
-      "city": "Актобе",
-      "count": 1,
-      "count_gt8h": 1,
-      "total_minutes": 1560,
-      "avg_minutes": 1560
-    },
-    {
-      "city": "Отрадное",
-      "count": 2,
-      "count_gt8h": 1,
-      "total_minutes": 805,
-      "avg_minutes": 402
-    },
-    {
-      "city": "Павлодар",
-      "count": 1,
-      "count_gt8h": 1,
-      "total_minutes": 630,
-      "avg_minutes": 630
-    },
-    {
-      "city": "Шымкент",
+      "city": "с.Карашокы",
       "count": 1,
       "count_gt8h": 0,
-      "total_minutes": 225,
-      "avg_minutes": 225
+      "total_minutes": 246,
+      "avg_minutes": 246
     },
     {
-      "city": "Караганда",
-      "count": 2,
+      "city": "Казалы",
+      "count": 1,
       "count_gt8h": 0,
-      "total_minutes": 110,
-      "avg_minutes": 55
+      "total_minutes": 135,
+      "avg_minutes": 135
+    },
+    {
+      "city": "Алматы",
+      "count": 1,
+      "count_gt8h": 0,
+      "total_minutes": 69,
+      "avg_minutes": 69
     }
   ],
   "by_zone": [
     {
-      "zone": "Актюбинский ДЭСД",
-      "count": 1,
-      "count_gt8h": 1,
-      "total_minutes": 1560,
-      "avg_minutes": 1560
-    },
-    {
-      "zone": "Восточно-Казахстанский ДЭСД",
-      "count": 2,
-      "count_gt8h": 1,
-      "total_minutes": 805,
-      "avg_minutes": 402
-    },
-    {
-      "zone": "Павлодарский ДЭСД",
-      "count": 1,
-      "count_gt8h": 1,
-      "total_minutes": 630,
-      "avg_minutes": 630
-    },
-    {
-      "zone": "Южно-Казахстанский ДЭСД",
+      "zone": "ДЭСД Жетысу",
       "count": 1,
       "count_gt8h": 0,
-      "total_minutes": 225,
-      "avg_minutes": 225
+      "total_minutes": 246,
+      "avg_minutes": 246
     },
     {
-      "zone": "Карагандинский ДЭСД",
-      "count": 2,
+      "zone": "Кызылординский ДЭСД",
+      "count": 1,
       "count_gt8h": 0,
-      "total_minutes": 110,
-      "avg_minutes": 55
+      "total_minutes": 135,
+      "avg_minutes": 135
+    },
+    {
+      "zone": "ДЭСД Алматы",
+      "count": 1,
+      "count_gt8h": 0,
+      "total_minutes": 69,
+      "avg_minutes": 69
     }
   ],
   "by_damage_type": [
     {
       "damage_type": "Станционное",
-      "count": 4,
-      "count_gt8h": 3,
-      "total_minutes": 2995,
-      "avg_minutes": 749
-    },
-    {
-      "damage_type": "Линейное",
       "count": 3,
       "count_gt8h": 0,
-      "total_minutes": 335,
-      "avg_minutes": 112
+      "total_minutes": 450,
+      "avg_minutes": 150
     }
   ],
   "daily": [
     {
-      "date": "05.07.2026",
-      "count": 2,
-      "count_gt8h": 1,
-      "total_minutes": 880,
-      "avg_minutes": 440
-    },
-    {
-      "date": "06.07.2026",
+      "date": "04.07.2026",
       "count": 1,
-      "count_gt8h": 1,
-      "total_minutes": 1560,
-      "avg_minutes": 1560
+      "count_gt8h": 0,
+      "total_minutes": 246,
+      "avg_minutes": 246
     },
     {
-      "date": "07.07.2026",
-      "count": 4,
-      "count_gt8h": 1,
-      "total_minutes": 890,
-      "avg_minutes": 222
+      "date": "08.07.2026",
+      "count": 2,
+      "count_gt8h": 0,
+      "total_minutes": 204,
+      "avg_minutes": 102
     }
   ],
   "top_nodes": [
     {
-      "node": "Актобе OLT_7",
-      "city": "Актобе",
-      "zone": "Актюбинский ДЭСД",
+      "node": "krshoky-alm-snp",
+      "city": "с.Карашокы",
+      "zone": "ДЭСД Жетысу",
       "count": 1,
-      "total_minutes": 1560,
-      "max_minutes": 1560
+      "total_minutes": 246,
+      "max_minutes": 246
     },
     {
-      "node": "Павлодар MSAN_3",
-      "city": "Павлодар",
-      "zone": "Павлодарский ДЭСД",
+      "node": "kyzy-prim-acx-1",
+      "city": "Казалы",
+      "zone": "Кызылординский ДЭСД",
       "count": 1,
-      "total_minutes": 630,
-      "max_minutes": 630
+      "total_minutes": 135,
+      "max_minutes": 135
     },
     {
-      "node": "Отрадное DSLAM_E5600",
-      "city": "Отрадное",
-      "zone": "Восточно-Казахстанский ДЭСД",
+      "node": "GTSALM_OPTS6_NGN@Nortel",
+      "city": "Алматы",
+      "zone": "ДЭСД Алматы",
       "count": 1,
-      "total_minutes": 555,
-      "max_minutes": 555
-    },
-    {
-      "node": "Отрадное DSLAM_E11",
-      "city": "Отрадное",
-      "zone": "Восточно-Казахстанский ДЭСД",
-      "count": 1,
-      "total_minutes": 250,
-      "max_minutes": 250
-    },
-    {
-      "node": "Шымкент DSLAM_E11",
-      "city": "Шымкент",
-      "zone": "Южно-Казахстанский ДЭСД",
-      "count": 1,
-      "total_minutes": 225,
-      "max_minutes": 225
-    },
-    {
-      "node": "Караганда MSAN_12",
-      "city": "Караганда",
-      "zone": "Карагандинский ДЭСД",
-      "count": 2,
-      "total_minutes": 110,
-      "max_minutes": 90
+      "total_minutes": 69,
+      "max_minutes": 69
     }
   ],
-  "escalations": [
-    {
-      "pb_number": "000000028034311",
-      "city": "Актобе",
-      "node": "Актобе OLT_7",
-      "zone": "Актюбинский ДЭСД",
-      "duration_text": "1 сут. 2 ч. 0 мин.",
-      "duration_minutes": 1560,
-      "started_at": "06.07.2026 14:20:00",
-      "damage_type": "Станционное"
-    },
-    {
-      "pb_number": "000000028034402",
-      "city": "Павлодар",
-      "node": "Павлодар MSAN_3",
-      "zone": "Павлодарский ДЭСД",
-      "duration_text": "0 сут. 10 ч. 30 мин.",
-      "duration_minutes": 630,
-      "started_at": "05.07.2026 08:00:00",
-      "damage_type": "Станционное"
-    },
-    {
-      "pb_number": "000000028034134",
-      "city": "Отрадное",
-      "node": "Отрадное DSLAM_E5600",
-      "zone": "Восточно-Казахстанский ДЭСД",
-      "duration_text": "0 сут. 9 ч. 15 мин.",
-      "duration_minutes": 555,
-      "started_at": "07.07.2026 06:52:39",
-      "damage_type": "Станционное"
-    }
-  ]
+  "escalations": []
 }
