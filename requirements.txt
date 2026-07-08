@@ -1,0 +1,6 @@
+python-telegram-bot[job-queue]>=21.0
+openpyxl>=3.1
+
+# Не используется в основном сценарии (bot_listener.py), но оставлен для
+# альтернативного варианта на личном аккаунте (fetch_telegram.py):
+telethon>=1.34

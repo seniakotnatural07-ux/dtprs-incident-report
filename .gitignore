@@ -1,0 +1,21 @@
+# Секреты и локальная конфигурация
+config_local.py
+.env
+
+# Сессия Telethon — эквивалент ключа доступа к Telegram-аккаунту
+*.session
+*.session-journal
+
+# Накопленные данные и сгенерированные отчёты
+raw_messages.jsonl
+avariynyy_otchet.xlsx
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Локальные настройки Claude Code
+.claude/
