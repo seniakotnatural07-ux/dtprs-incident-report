@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аварии на сети — демо-дашборд</title>
+<style>
+  :root {
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid-line:      #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6; /* blue — единственная серия на графиках-барах */
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid-line:      #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --status-good:     #0ca30c;
+      --status-warning:  #fab219;
+      --status-critical: #d03b3b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px 64px; }
+
+  header { margin-bottom: 24px; }
+  header h1 { font-size: 22px; margin: 0 0 6px; }
+  .subtitle { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  .demo-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--status-warning);
+    border: 1px solid var(--status-warning);
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 10px;
+  }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi-tile .kpi-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0 0 6px;
+  }
+  .kpi-tile .kpi-value {
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+    color: var(--series-1);
+    line-height: 1.2;
+  }
+  .kpi-tile .kpi-value.text { font-size: 18px; color: var(--text-primary); }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 720px) {
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 14px;
+    color: var(--text-primary);
+  }
+
+  .hbar-row { display: flex; align-items: center; margin-bottom: 10px; }
+  .hbar-row:last-child { margin-bottom: 0; }
+  .hbar-label {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding-right: 8px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hbar-track {
+    flex: 1;
+    position: relative;
+    height: 18px;
+    background: var(--grid-line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .hbar-fill {
+    height: 100%;
+    background: var(--series-1);
+    border-radius: 4px;
+    min-width: 4px;
+  }
+  .hbar-value {
+    width: 34px;
+    flex-shrink: 0;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    text-align: right;
+    padding-left: 8px;
+  }
+
+  .vbar-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; }
+  .vbar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .vbar-value { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+  .vbar-fill { width: 100%; max-width: 40px; background: var(--series-1); border-radius: 4px 4px 0 0; }
+  .vbar-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; white-space: nowrap; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--grid-line);
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--grid-line);
+    font-variant-numeric: tabular-nums;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .table-wrap { overflow-x: auto; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .badge.critical { background: color-mix(in srgb, var(--status-critical) 16%, transparent); color: var(--status-critical); }
+
+  .section { margin-bottom: 16px; }
+
+  footer {
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--grid-line);
+    padding-top: 16px;
+  }
+  footer a { color: var(--series-1); }
+
+  .empty { color: var(--text-muted); font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="demo-badge">ДЕМО-ДАННЫЕ</div>
+      <h1>Аварии на сети — сводка</h1>
+      <p class="subtitle" id="generated-at"></p>
+    </header>
+
+    <section class="kpi-grid" id="kpi-grid"></section>
+
+    <section class="charts-grid">
+      <div class="card">
+        <h2>По городам</h2>
+        <div id="chart-city"></div>
+      </div>
+      <div class="card">
+        <h2>По зонам ответственности</h2>
+        <div id="chart-zone"></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <h2>Динамика по дням</h2>
+      <div id="chart-daily"></div>
+    </section>
+
+    <section class="section card">
+      <h2>Топ проблемных объектов</h2>
+      <div class="table-wrap" id="table-nodes"></div>
+    </section>
+
+    <section class="section card">
+      <h2>Аварии с простоем &gt; 8 часов</h2>
+      <div class="table-wrap" id="table-escalations"></div>
+    </section>
+
+    <footer>
+      Демонстрационный дашборд на тестовых данных — реальный отчёт формируется
+      локально в виде Excel-файла (9 листов, диаграммы, эскалации в Telegram).
+      Исходный код: <a href="https://github.com/seniakotnatural07-ux/dtprs-incident-report">dtprs-incident-report</a>.
+    </footer>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

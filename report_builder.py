@@ -11,6 +11,7 @@ build_alert_text(records) формирует текст telegram-сводки п
 с простоем более CRITICAL_THRESHOLD_MINUTES минут (см. PRD, раздел 5).
 """
 
+import json
 from datetime import datetime, timedelta
 
 from openpyxl import Workbook
@@ -505,5 +506,92 @@ def build_alert_text(raw_records, threshold=CRITICAL_THRESHOLD_MINUTES):
         lines.append(f"🕐 Начало: {_fmt_date(r.get('created_at')) or r.get('created_at_raw', '')}")
         lines.append(f"🔧 Характер: {r.get('damage_type', '')}")
         lines.append("━━━━━━━━━━━━━━━━━━━━━")
+
+    return "\n".join(lines)
+
+
+def _serialize_groups(groups, key_name):
+    result = []
+    for g in groups:
+        key = g["key"]
+        key = key.strftime("%d.%m.%Y") if hasattr(key, "strftime") else key
+        result.append({
+            key_name: key,
+            "count": g["count"],
+            "count_gt8h": g["count_gt8h"],
+            "total_minutes": g["total_minutes"],
+            "avg_minutes": round(g["avg_minutes"]),
+        })
+    return result
+
+
+def build_dashboard_data(raw_records, now=None):
+    """Собирает те же агрегаты, что и Excel-отчёт, в виде JSON-совместимого словаря
+    (для веб-дашборда, см. docs/)."""
+    now = now or datetime.now()
+    deduped = deduplicate(raw_records)
+
+    total = len(deduped)
+    total_minutes = sum(r.get("duration_minutes") or 0 for r in deduped)
+    count_gt8h = sum(1 for r in deduped if (r.get("duration_minutes") or 0) >= CRITICAL_THRESHOLD_MINUTES)
+    avg_minutes = total_minutes / total if total else 0
+
+    by_city = _aggregate_by(deduped, lambda r: r.get("city"))
+    by_zone = _aggregate_by(deduped, lambda r: r.get("zone"))
+    by_damage = _aggregate_by(deduped, lambda r: r.get("damage_type"))
+    daily = _aggregate_by(deduped, _incident_date)
+    daily.sort(key=lambda g: (g["key"] == "—", g["key"]))
+    top_nodes = _aggregate_nodes(deduped)[:10]
+
+    problem_city = by_city[0]["key"] if by_city else "—"
+    by_node_count = sorted(_aggregate_nodes(deduped), key=lambda g: g["count"], reverse=True)
+    frequent_node = by_node_count[0]["node"] if by_node_count else "—"
+
+    escalations = get_escalation_records(raw_records, CRITICAL_THRESHOLD_MINUTES)
+
+    return {
+        "generated_at": now.isoformat(),
+        "kpi": {
+            "total_incidents": total,
+            "gt8h_count": count_gt8h,
+            "total_downtime_minutes": total_minutes,
+            "avg_downtime_minutes": round(avg_minutes),
+            "problem_city": problem_city,
+            "frequent_node": frequent_node,
+        },
+        "by_city": _serialize_groups(by_city, "city"),
+        "by_zone": _serialize_groups(by_zone, "zone"),
+        "by_damage_type": _serialize_groups(by_damage, "damage_type"),
+        "daily": _serialize_groups(daily, "date"),
+        "top_nodes": [
+            {
+                "node": g["node"], "city": g["city"], "zone": g["zone"],
+                "count": g["count"], "total_minutes": g["total_minutes"],
+                "max_minutes": g["max_minutes"],
+            }
+            for g in top_nodes
+        ],
+        "escalations": [
+            {
+                "pb_number": r.get("pb_number", ""),
+                "city": r.get("city", ""),
+                "node": r.get("node", ""),
+                "zone": r.get("zone", ""),
+                "duration_text": r.get("duration_raw", ""),
+                "duration_minutes": r.get("duration_minutes") or 0,
+                "started_at": _fmt_date(r.get("created_at")) or r.get("created_at_raw", ""),
+                "damage_type": r.get("damage_type", ""),
+            }
+            for r in escalations
+        ],
+    }
+
+
+def export_dashboard_json(raw_records, path, now=None):
+    """Пишет build_dashboard_data(...) в файл path в формате JSON (UTF-8)."""
+    data = build_dashboard_data(raw_records, now=now)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return path
 
     return "\n".join(lines)

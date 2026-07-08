@@ -176,44 +176,12 @@ async def fetch_and_build_report():
 
 # --- Демонстрационный режим (без подключения к Telegram) -------------------
 
-_DEMO_MESSAGES = [
-    ("Восточно-Казахстанский ДЭСД", """
-Номер ПБ: 000000028034134
-Время создания ПБ: 07.07.2026 06:52:39
-Район: Уланский
-Город: Отрадное
-Узел сети: Отрадное DSLAM_E5600
-Группа исполнителей: ЕЦУС_Т1_Аст_СД
-Зона ответственности: Восточно-Казахстанский ДЭСД
-Характер повреждения ПБ: Станционное
-Подробное описание аварии: Устройство недоступно в Zabbix
-Источник аварии: Unavailable by ICMP ping
-Фактическая длительность: 0 сут. 9 ч. 15 мин.
-""", 0),
-    ("Карагандинский ДЭСД", """
-Номер ПБ: 000000028034200
-Время создания ПБ: 07.07.2026 10:00:00
-Район: Октябрьский
-Город: Караганда
-Узел сети: Караганда MSAN_12
-Группа исполнителей: ЕЦУС_Т1_Кар_СД
-Зона ответственности: Карагандинский ДЭСД
-Характер повреждения ПБ: Линейное
-Подробное описание аварии: Обрыв кабеля
-Источник аварии: Fiber cut alarm
-Фактическая длительность: 0 сут. 1 ч. 30 мин.
-""", 1),
-]
-
-
 def _run_demo():
     """Строит тестовый отчёт из встроенных примеров — без обращения к Telegram."""
-    from parser import parse_message
+    from demo_data import get_demo_records
 
     now = datetime.now()
-    records = []
-    for subchat, text, hours_ago in _DEMO_MESSAGES:
-        records.append(parse_message(text.strip(), subchat=subchat, message_date=now - timedelta(hours=hours_ago)))
+    records = get_demo_records(now=now)
 
     output_path = build_report(records, CONFIG["OUTPUT_PATH"], now=now)
     print(f"[DEMO] Отчёт сохранён: {output_path}")
