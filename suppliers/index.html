@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Реестр поставщиков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>Отчётность по поставщикам</h1>
+    <div class="topbar-actions">
+      <button id="btnAdd" class="btn btn-primary">+ Добавить запись</button>
+      <button id="btnExportJson" class="btn">Экспорт JSON</button>
+      <button id="btnExportCsv" class="btn">Экспорт CSV</button>
+      <label class="btn btn-file">
+        Импорт JSON
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </label>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="summary" id="summary">
+    <div class="card">
+      <div class="card-label">Записей</div>
+      <div class="card-value" id="sumCount">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Сумма поставок</div>
+      <div class="card-value" id="sumAmount">0 ₸</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Оплачено</div>
+      <div class="card-value" id="sumPaid">0 ₸</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Долг</div>
+      <div class="card-value" id="sumDebt">0 ₸</div>
+    </div>
+    <div class="card card-warn">
+      <div class="card-label">Пени начислено</div>
+      <div class="card-value" id="sumPenalty">0 ₸</div>
+    </div>
+  </section>
+
+  <section class="toolbar">
+    <input type="search" id="searchBox" placeholder="Поиск по БИН...">
+    <select id="statusFilter">
+      <option value="">Все статусы оплаты</option>
+      <option value="paid">Оплачено</option>
+      <option value="partial">Оплачено частично</option>
+      <option value="unpaid">Не оплачено</option>
+    </select>
+    <select id="sortField">
+      <option value="supplierName">Сортировка: по поставщику</option>
+      <option value="contractDate">по дате договора</option>
+      <option value="paymentDate">по дате оплаты</option>
+      <option value="amount">по сумме</option>
+      <option value="penaltyAmount">по пене</option>
+    </select>
+  </section>
+
+  <section class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Поставщик</th>
+          <th>Договор</th>
+          <th>Накладная</th>
+          <th>Акт приёма-передачи</th>
+          <th>Отчёт о внутритранспортной ценности</th>
+          <th>Сумма</th>
+          <th>Оплата</th>
+          <th>Пеня</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" hidden>
+      Пока нет записей. Нажмите «Добавить запись», чтобы внести первого поставщика.
+    </div>
+  </section>
+
+</main>
+
+<!-- Modal -->
+<div id="modalOverlay" class="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Новая запись</h2>
+      <button id="btnCloseModal" class="btn-icon" aria-label="Закрыть">&times;</button>
+    </div>
+    <form id="recordForm" class="modal-body">
+      <input type="hidden" id="recordId">
+
+      <fieldset>
+        <legend>Поставщик</legend>
+        <div class="grid2">
+          <label>Название поставщика *
+            <input type="text" id="supplierName" required>
+          </label>
+          <label>БИН
+            <input type="text" id="inn">
+          </label>
+          <label>Контактное лицо / телефон
+            <input type="text" id="contact">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Договор</legend>
+        <div class="grid3">
+          <label>Номер договора
+            <input type="text" id="contractNumber">
+          </label>
+          <label>Дата договора
+            <input type="date" id="contractDate">
+          </label>
+          <label>Файл договора
+            <input type="file" id="contractFile">
+          </label>
+        </div>
+        <div class="file-preview" id="contractFilePreview"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Накладная</legend>
+        <div class="grid3">
+          <label>Номер накладной
+            <input type="text" id="invoiceNumber">
+          </label>
+          <label>Дата накладной
+            <input type="date" id="invoiceDate">
+          </label>
+          <label>Файл накладной
+            <input type="file" id="invoiceFile">
+          </label>
+        </div>
+        <div class="file-preview" id="invoiceFilePreview"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Акт приёма-передачи</legend>
+        <div class="grid3">
+          <label>Номер акта
+            <input type="text" id="actNumber">
+          </label>
+          <label>Дата акта
+            <input type="date" id="actDate">
+          </label>
+          <label>Файл акта
+            <input type="file" id="actFile">
+          </label>
+        </div>
+        <div class="file-preview" id="actFilePreview"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Отчёт о внутритранспортной ценности</legend>
+        <div class="grid3">
+          <label>Номер отчёта
+            <input type="text" id="vtcNumber">
+          </label>
+          <label>Дата отчёта
+            <input type="date" id="vtcDate">
+          </label>
+          <label>Ценность (сумма)
+            <input type="number" id="vtcValue" step="0.01">
+          </label>
+        </div>
+        <div class="grid1">
+          <label>Файл отчёта
+            <input type="file" id="vtcFile">
+          </label>
+        </div>
+        <div class="file-preview" id="vtcFilePreview"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Оплата и пеня</legend>
+        <div class="grid3">
+          <label>Сумма поставки
+            <input type="number" id="amount" step="0.01">
+          </label>
+          <label>Статус оплаты
+            <select id="paymentStatus">
+              <option value="unpaid">Не оплачено</option>
+              <option value="partial">Оплачено частично</option>
+              <option value="paid">Оплачено</option>
+            </select>
+          </label>
+          <label>Оплаченная сумма
+            <input type="number" id="paidAmount" step="0.01">
+          </label>
+        </div>
+        <div class="grid3">
+          <label>Дата оплаты
+            <input type="date" id="paymentDate">
+          </label>
+          <label>Сумма пени
+            <input type="number" id="penaltyAmount" step="0.01">
+          </label>
+          <label>Причина пени
+            <input type="text" id="penaltyReason" placeholder="напр. просрочка поставки на 5 дней">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Заметки</legend>
+        <textarea id="notes" rows="3" placeholder="Дополнительная информация..."></textarea>
+      </fieldset>
+
+      <div class="modal-footer">
+        <button type="button" id="btnCancel" class="btn">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View modal (record details / documents) -->
+<div id="viewOverlay" class="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Карточка поставщика</h2>
+      <button id="btnCloseView" class="btn-icon" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body" id="viewBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
